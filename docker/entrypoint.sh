@@ -9,18 +9,21 @@ if [ ! -d vendor ]; then
     composer install
 fi
 
-/usr/bin/mysqld_safe > /dev/null 2>&1 &
+/usr/local/bin/start_mysql
 
 echo "=> Creating database aperophp"
 RET=1
 while [[ RET -ne 0 ]]; do
 	sleep 5
-	mysql -uroot -e "CREATE DATABASE IF NOT EXISTS aperophp"
+ 	mysql -uroot -e "SHOW DATABASES"
 	RET=$?
 done
 
-/var/www/app/console db:install
-/var/www/app/console db:load-fixtures
+if [ ! -d /var/lib/mysql/aperophp ] ; then
+	mysql -uroot -e "CREATE DATABASE IF NOT EXISTS aperophp"
+	/var/www/app/console db:install
+	/var/www/app/console db:load-fixtures
+fi
 
 mysqladmin -uroot shutdown
 

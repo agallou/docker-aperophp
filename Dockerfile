@@ -18,23 +18,28 @@ RUN sed -e 's/;listen\.owner/listen.owner/' -i /etc/php5/fpm/pool.d/www.conf
 RUN sed -e 's/;listen\.group/listen.group/' -i /etc/php5/fpm/pool.d/www.conf
 RUN echo "\ndaemon off;" >> /etc/nginx/nginx.conf
 
+RUN echo 'date.timezone = Europe/Paris' >> /etc/php5/fpm/php.ini
+
+RUN apt-get install -y software-properties-common
+RUN apt-get install -y python-software-properties python g++ make
+RUN add-apt-repository -y ppa:chris-lea/node.js
+RUN apt-get update -y
+RUN apt-get install -y nodejs
+RUN npm install -g jshint recess uglify-js
+
 ADD docker/services/ /srv/services
 
 ADD docker/entrypoint.sh /usr/local/bin/entrypoint.sh
+ADD docker/start_mysql /usr/local/bin/start_mysql
+
 ADD docker/vhost.conf /etc/nginx/sites-enabled/default
 ADD docker/my.cnf /etc/mysql/my.cnf
 
-RUN echo 'date.timezone = Europe/Paris' >> /etc/php5/fpm/php.ini
-
-
-RUN apt-get install -y python-software-properties python g++ make
-#RUN add-apt-repository -y ppa:chris-lea/node.js
-#RUN apt-get update -y
-#RUN apt-get install -y nodejs
 
 WORKDIR /var/www
 
 VOLUME ["/var/www"]
+VOLUME ["/var/lib/mysql"]
 
 EXPOSE 80
 
