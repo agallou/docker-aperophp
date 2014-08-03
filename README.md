@@ -23,7 +23,7 @@ Configuration
 In order to use make the links work, you may want to add the in the ```app/config.php``` file : 
 
 ```php
-$app->before(function (Request $request) use ($app) {
+$app->before(function (\Symfony\Component\HttpFoundation\Request $request) use ($app) {
     $app['request_context']->setHost('localhost:9797');
 });
 ```
